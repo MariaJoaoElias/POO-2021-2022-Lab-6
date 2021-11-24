@@ -1,0 +1,45 @@
+@startuml
+
+class Client {
+    -String id
+    -IdentificationType idType
+    -String name
+    -String email
+    -String phoneNumber
+    -String address
+    -Date birthday
+    -Collection<Account> accounts
+    -Collection<Account> sharedAccounts
+}
+
+class IdentificationType {
+    -String name
+}
+
+class Account {
+    -String id
+    -double balance
+    -Client client
+    -Collection<Client> sharedClients
+    -Collection<Cashflow> cashflows
+    -boolean allowNegativeBalance
+}
+
+class Cashflow {
+    -Date date
+    -double value
+    -OperationRate rate
+}
+
+class OperationRate {
+    -Date startedAt
+    -double value
+}
+
+Client "1" -- "0..*" Account : owned
+Client "0..*" -- "0..*" Account : shared
+Client "0..*" -- "1" IdentificationType
+Account "1" -- "0..*" Cashflow
+Cashflow "0..*" -- "1" OperationRate
+
+@enduml
