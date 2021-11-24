@@ -1,0 +1,67 @@
+@startuml
+package models {
+    class Client {
+        -String name
+        -String idNumber
+        -IdentificationType idType
+        -String address
+        -String email
+        -String phoneNumber
+        -Date birthdate
+        -Collection<Account> accounts
+    }
+    class Account {
+        -Client owner
+        -Collection<Client> clients
+        -Collection<Operation> operations
+    }
+    class Operation {
+        -Client client
+        -Date date
+        -double amount
+        -OperationRate rate
+    }
+    class OperationRate {
+        -double value
+        -Date definedAt
+    }
+    class IdentificationType {
+        -String name
+        -String symbol
+    }
+
+    Client "0..*" -- "0..*" Account : shared
+    Client "1" -- "0..*" Account : owner
+    Account "1" -- "0..*" Operation
+    Operation "0.*" -- "1" OperationRate
+    Client "1" -- "1" IdentificationType
+}
+
+package controllers {
+    class Bank {
+        -Collection<Client> client
+        -Collection<Account> accounts
+        -Collection<IdentificationType> identificationTypes
+        -Collection<OperationRate> operationRates
+        +boolean hasClient(String clientId, String idType)
+        +void registerClient(String clientId, String idType, String name, String birthdate, String address, String email, String phoneNumber)
+        +void changeClient(String clientId, String idType, String name, String birthdate, String address, String email, String phoneNumber)
+        +boolean hasAccount(String id)
+        +boolean hasClients()
+        +Collection<Client> getClients()
+        +boolean checkInitialAmount(double amount, String allowNegative)
+        +String registerAccount(String clientId, String idType, String allowNegative, double amount)
+        +void shareAccount(String clientId, String idType, String accountId, String otherCLientId, String otherIdType)
+        +boolean isClientAutorized(String clientId, String idType, String accountId)
+        +boolean isOperationAutorized(String clientId, String idType, String accountId, double amount)
+        +Collection<Client> getAccountClients(String accountId)
+        +Account getAccount(String accountId)
+        +void save(String filename)
+        +{static} Bank load(String filename)
+    }
+}
+Bank "1" *-- "0..*" Client
+Bank "1" *-- "0..*" Account
+Bank "1" *-- "1..*" IdentificationType
+Bank "1" *-- "1..*" OperationRate
+@enduml
