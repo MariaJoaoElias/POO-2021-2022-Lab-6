@@ -1,0 +1,79 @@
+@startuml
+
+package models {
+    class Client {
+        -String id
+        -IdentificationType idType
+        -String name
+        -String email
+        -String phoneNumber
+        -String address
+        -Date birthday
+        -Collection<Account> accounts
+        -Collection<Account> sharedAccounts
+    }
+
+    class IdentificationType {
+        -String name
+    }
+
+    class Account {
+        -String id
+        -double balance
+        -Client client
+        -Collection<Client> sharedClients
+        -Collection<Cashflow> cashflows
+        -boolean allowNegativeBalance
+    }
+
+    class Cashflow {
+        -Date date
+        -double value
+        -OperationRate rate
+    }
+
+    class OperationRate {
+        -Date startedAt
+        -double value
+    }
+
+    Client "1" -- "0..*" Account : owned
+    Client "0..*" -- "0..*" Account : shared
+    Client "0..*" -- "1" IdentificationType
+    Account "1" -- "0..*" Cashflow
+    Cashflow "0..*" -- "1" OperationRate
+}
+
+package controllers {
+    class Bank {
+        -Collection<Client> clients
+        -Collection<Account> accounts
+        -Collection<OperationRate> operationRates
+        +boolean hasClient(String clientId, String clientIdType)
+        +void registerClient(String clientId, String clientIdType, String name, String address, String email, String phoneNumber, String birthdate)
+        +void changeClient(String clientId, String clientIdType, String name, String address, String email, String phoneNumber, String birthdate)
+        +boolean hasClients()
+        +Collection<Client> getClients()
+        +boolean isInitialAmountAuthorized(double amount, String allowNegativeBalance)
+        +String registerAccount(String clientId, String clientIdType, double amount, String allowNegativeBalance)
+        +boolean hasAccount(String accountId)
+        +void shareAccount(String clientId, String clientIdType, String accountId, String sharedClientId, String sharedClientIdType)
+        +boolean isClientAuthorized(String clientId, String clientIdType, String accountId)
+        +boolean isCashflowAllowed(String accountId, double value)
+        +void registerCashflow(String clientId, String clientIdType, String accountId, doble value)
+        +Collection<Client> getAccountClients(String accountId)
+        +Account getAccount(String accountId)
+        +void save(String filename)
+        +{static} boolean fileExists(String filename)
+        +{static} Bank load(String filename)
+    }
+    Bank "1" *-- "0..*" Client
+    Bank "1" *-- "0..*" Account
+    Bank "1" *-- "0..*" OperationRate
+}
+
+package views {
+    class CLI
+    CLI "1" -- "1" Bank
+}
+@enduml
