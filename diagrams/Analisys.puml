@@ -1,0 +1,38 @@
+@startuml
+class Client {
+    -String name
+    -String idNumber
+    -IdentificationType idType
+    -String address
+    -String email
+    -String phoneNumber
+    -Date birthdate
+    -Collection<Account> accounts
+}
+class Account {
+    -Client owner
+    -Collection<Client> clients
+    -Collection<Operation> operations
+}
+class Operation {
+    -Client client
+    -Date date
+    -double amount
+    -OperationRate rate
+}
+class OperationRate {
+    -double value
+    -Date definedAt
+}
+class IdentificationType {
+    -String name
+    -String symbol
+}
+
+Client "0..*" -- "0..*" Account : shared
+Client "1" -- "0..*" Account : owner
+Account "1" -- "0..*" Operation
+Operation "0.*" -- "1" OperationRate
+Client "1" -- "1" IdentificationType
+
+@enduml
